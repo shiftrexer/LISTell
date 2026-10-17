@@ -18,6 +18,20 @@ After creating the `listell` D1 database, replace that placeholder with the real
 
 The repository itself does not create or deploy Cloudflare account resources automatically.
 
+## Current status
+
+The frontend build is checked by GitHub Actions. The application is still under development and is not production-ready.
+
+Not complete yet:
+- Cloudflare D1 production database creation and deployment
+- realtime synchronization between members
+- actual notification delivery (the preference toggles alone are implemented)
+- full end-to-end authentication/recovery test coverage
+- Cloudflare/D1 migration validation for all migrations
+- final permission, sharing, account-deletion, and device testing
+
+Do not treat these features as complete until their tests pass.
+
 ## Current development branch
 
 Work is developed on `rebuild-listell` and reviewed through PR #1 before merging to `main`.
