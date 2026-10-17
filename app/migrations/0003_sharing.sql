@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS invites(token_hash TEXT PRIMARY KEY,list_id TEXT NOT NULL REFERENCES lists(id) ON DELETE CASCADE,created_by TEXT NOT NULL REFERENCES users(id),created_at INTEGER NOT NULL,expires_at INTEGER NOT NULL,used_at INTEGER,used_by TEXT REFERENCES users(id));
+CREATE TABLE IF NOT EXISTS local_nicknames(owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,target_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,nickname TEXT NOT NULL,PRIMARY KEY(owner_user_id,target_user_id));
+CREATE INDEX IF NOT EXISTS idx_invites_list ON invites(list_id,expires_at);
