@@ -1,3 +1,4 @@
+import './interactions.js';
 import {showInviteSheet} from './invite.js';
 
 export function bindInviteAction({api,getListId}){
