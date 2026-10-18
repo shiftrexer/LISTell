@@ -55,6 +55,8 @@ jobs:
         run: node scripts/history-e2e.mjs
       - name: Test sharing invites roles leave rejoin and local nicknames
         run: node scripts/sharing-e2e.mjs
+      - name: Test per-list notification settings and push subscriptions
+        run: node scripts/notifications-e2e.mjs
       - name: Show Worker log on failure
         if: failure()
         run: cat /tmp/listell-wrangler.log || true
