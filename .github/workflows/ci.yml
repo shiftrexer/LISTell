@@ -51,6 +51,8 @@ jobs:
         run: node scripts/lists-e2e.mjs
       - name: Test product mutations purchase restore and viewer permissions
         run: node scripts/items-e2e.mjs
+      - name: Test purchase history limit restore repurchase and permissions
+        run: node scripts/history-e2e.mjs
       - name: Show Worker log on failure
         if: failure()
         run: cat /tmp/listell-wrangler.log || true
