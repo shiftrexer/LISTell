@@ -33,3 +33,20 @@ jobs:
             echo "$violations"
             exit 1
           fi
+      - name: Apply migrations to local Cloudflare D1
+        run: npm run d1:local
+      - name: Start local Cloudflare Worker
+        run: |
+          npm run cf:dev > /tmp/listell-wrangler.log 2>&1 &
+          echo $! > /tmp/listell-wrangler.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8787/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/listell-wrangler.log
+          exit 1
+      - name: Test register login recovery flow
+        run: node scripts/auth-e2e.mjs
+      - name: Show Worker log on failure
+        if: failure()
+        run: cat /tmp/listell-wrangler.log || true
