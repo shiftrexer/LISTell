@@ -47,6 +47,8 @@ jobs:
           exit 1
       - name: Test register login recovery flow
         run: node scripts/auth-e2e.mjs
+      - name: Test list creation duplicate validation and ordering
+        run: node scripts/lists-e2e.mjs
       - name: Show Worker log on failure
         if: failure()
         run: cat /tmp/listell-wrangler.log || true
