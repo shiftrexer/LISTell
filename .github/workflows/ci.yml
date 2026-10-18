@@ -49,6 +49,8 @@ jobs:
         run: node scripts/auth-e2e.mjs
       - name: Test list creation duplicate validation and ordering
         run: node scripts/lists-e2e.mjs
+      - name: Test product mutations purchase restore and viewer permissions
+        run: node scripts/items-e2e.mjs
       - name: Show Worker log on failure
         if: failure()
         run: cat /tmp/listell-wrangler.log || true
