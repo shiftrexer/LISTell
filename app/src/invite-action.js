@@ -1,7 +1,9 @@
 import './interactions.js';
 import {showInviteSheet} from './invite.js';
+import {bindListManagement} from './list-management.js';
 
 export function bindInviteAction({api,getListId}){
+  bindListManagement({api});
   const button=document.querySelector('#invite');
   if(!button)return;
   button.onclick=async()=>{
