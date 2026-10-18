@@ -1,18 +1,20 @@
-export function applyViewerGuard(getState){
-  const state=getState();
-  const roleFor=item=>item?.role||state.list?.role;
-  document.querySelectorAll('[data-buy]').forEach(button=>{
-    const item=[...state.items,...state.allItems].find(x=>x.id===button.dataset.buy);
-    if(roleFor(item)==='viewer')button.remove();
+const roleFromRow=row=>row?.dataset?.role;
+function apply(){
+  document.querySelectorAll('.row').forEach(row=>{
+    if(roleFromRow(row)!=='viewer')return;
+    row.querySelector('[data-buy]')?.remove();
+    row.querySelector('[data-edit]')?.removeAttribute('data-edit');
   });
-  document.querySelectorAll('[data-edit]').forEach(target=>{
-    const item=[...state.items,...state.allItems].find(x=>x.id===target.dataset.edit);
-    if(roleFor(item)==='viewer')target.removeAttribute('data-edit');
+  document.querySelectorAll('[data-viewer-readonly="true"]').forEach(scope=>{
+    scope.querySelectorAll('[data-buy]').forEach(x=>x.remove());
+    scope.querySelectorAll('[data-edit]').forEach(x=>x.removeAttribute('data-edit'));
   });
-  const add=document.querySelector('[data-tab="add"]');
-  if(add&&state.list?.role==='viewer')add.disabled=true;
-  if(state.panel==='manage'&&state.list?.role!=='admin'){
-    document.querySelector('#renameList')?.remove();
-    document.querySelector('#deleteList')?.remove();
-  }
 }
+const observer=new MutationObserver(apply);
+function install(){
+  apply();
+  const root=document.querySelector('#app')||document.body;
+  observer.observe(root,{childList:true,subtree:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+export {apply as applyViewerGuard};
