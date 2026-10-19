@@ -1,0 +1,1 @@
+{"name":"listell","main":"worker/index.js","compatibility_date":"2026-10-01","assets":{"directory":"./dist","binding":"ASSETS","not_found_handling":"single-page-application"},"d1_databases":[{"binding":"DB","database_name":"listell","database_id":"eeac986c-ea92-466d-b0c7-bdfd095d763a","migrations_dir":"migrations"}]}

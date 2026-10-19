@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main, rebuild-listell]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run build
+      - name: Validate D1 migrations with SQLite
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y sqlite3
+          rm -f /tmp/listell.db
+          for migration in migrations/*.sql; do
+            echo "Applying $migration"
+            sqlite3 /tmp/listell.db < "$migration"
+          done
+          violations="$(sqlite3 /tmp/listell.db 'PRAGMA foreign_key_check;')"
+          if [ -n "$violations" ]; then
+            echo "$violations"
+            exit 1
+          fi
+      - name: Apply migrations to local Cloudflare D1
+        run: npm run d1:local
+      - name: Start local Cloudflare Worker
+        run: |
+          npm run cf:dev > /tmp/listell-wrangler.log 2>&1 &
+          echo $! > /tmp/listell-wrangler.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8787/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/listell-wrangler.log
+          exit 1
+      - name: Test register login recovery flow
+        run: node scripts/auth-e2e.mjs
+      - name: Test list creation duplicate validation and ordering
+        run: node scripts/lists-e2e.mjs
+      - name: Test product mutations purchase restore and viewer permissions
+        run: node scripts/items-e2e.mjs
+      - name: Test purchase history limit restore repurchase and permissions
+        run: node scripts/history-e2e.mjs
+      - name: Test sharing invites roles leave rejoin and local nicknames
+        run: node scripts/sharing-e2e.mjs
+      - name: Test per-list notification settings and push subscriptions
+        run: node scripts/notifications-e2e.mjs
+      - name: Show Worker log on failure
+        if: failure()
+        run: cat /tmp/listell-wrangler.log || true
