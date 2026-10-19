@@ -1,5 +1,6 @@
 const viewerItems=new Set();
 let selectedRole=null;
+let selectedPriority='normal';
 const nativeFetch=window.fetch.bind(window);
 window.fetch=async(...args)=>{
   const response=await nativeFetch(...args);
@@ -50,6 +51,15 @@ function setupPriorityPicker(){
   };
   choices[0].parentElement.insertAdjacentElement('afterend',add);
 }
+function paintPriorityView(){
+  const colors={urgent:'#ff5f57',normal:'#65d46e',any:'#ffffff'};
+  document.querySelectorAll('[data-p]').forEach(b=>{
+    const on=b.dataset.p===selectedPriority,c=colors[b.dataset.p]||'#fff';
+    b.style.color=c;b.style.borderColor=on?c:'#3a403a';b.style.background=on?`${c}22`:'#101310';
+    b.style.boxShadow=on?`0 0 0 1px ${c} inset`:'none';
+    b.setAttribute('aria-pressed',String(on));
+  });
+}
 function apply(){
   document.querySelectorAll('.row').forEach(row=>{
     const buy=row.querySelector('[data-buy]'),edit=row.querySelector('[data-edit]');
@@ -61,9 +71,16 @@ function apply(){
   const add=document.querySelector('[data-tab="add"]');
   if(add){add.disabled=selectedRole==='viewer';add.setAttribute('aria-disabled',String(selectedRole==='viewer'))}
   setupPriorityPicker();
+  paintPriorityView();
 }
 const observer=new MutationObserver(apply);
 function install(){
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-p]');
+    if(!b)return;
+    selectedPriority=b.dataset.p;
+    queueMicrotask(apply);
+  },true);
   apply();
   observer.observe(document.querySelector('#app')||document.body,{childList:true,subtree:true});
   observer.observe(document.body,{childList:true});
