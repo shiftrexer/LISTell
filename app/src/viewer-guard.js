@@ -28,7 +28,13 @@ function setupPriorityPicker(){
   if(!choices.length)return;
   sheet.dataset.priorityPicker='ready';
   let selected='normal';
-  const paint=()=>choices.forEach(b=>b.classList.toggle('selected',b.dataset.choice===selected));
+  const colors={urgent:'#ff5f57',normal:'#65d46e',any:'#ffffff'};
+  const paint=()=>choices.forEach(b=>{
+    const on=b.dataset.choice===selected,c=colors[b.dataset.choice]||'#fff';
+    b.style.color=c;b.style.borderColor=on?c:'#3a403a';b.style.background=on?`${c}22`:'#101310';
+    b.style.boxShadow=on?`0 0 0 1px ${c} inset`:'none';
+    b.setAttribute('aria-pressed',String(on));
+  });
   paint();
   choices.forEach(b=>b.addEventListener('click',e=>{
     if(b.dataset.commit==='1'){delete b.dataset.commit;return}
@@ -36,6 +42,7 @@ function setupPriorityPicker(){
   },true));
   const add=document.createElement('button');
   add.type='button';add.className='priority-add';add.textContent='リストに追加';
+  Object.assign(add.style,{width:'100%',height:'56px',border:'0',borderRadius:'16px',background:'#b9f486',color:'#071006',fontWeight:'800',fontSize:'18px',marginTop:'4px'});
   add.onclick=()=>{
     const target=choices.find(b=>b.dataset.choice===selected);
     if(!target)return;
