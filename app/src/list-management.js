@@ -8,7 +8,7 @@ export function bindListManagement({api}){
   const create=document.createElement('div');create.id='manageNewList';create.innerHTML='<strong>新規リストを作成</strong><b>›</b>';
   const reorder=document.createElement('div');reorder.id='reorderLists';reorder.innerHTML='<strong>リストを並び替え</strong><b>›</b>';
   card.prepend(reorder);card.prepend(create);
-  create.onclick=async()=>{let name=prompt('リスト名');if(!name)return;try{await api('lists',{name});haptic();location.reload()}catch(e){alert(e.message)}};
+  create.onclick=async()=>{let name=await window.listellPrompt({title:'新規リストを作成',label:'リスト名',placeholder:'リスト名を入力'});if(!name)return;try{await api('lists',{name});haptic();location.reload()}catch(e){alert(e.message)}};
   reorder.onclick=async()=>{
     const existing=document.querySelector('#reorderPanel');if(existing)return existing.remove();
     try{
