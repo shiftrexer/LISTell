@@ -1,1 +1,27 @@
-{"name":"listell","main":"worker/index.js","compatibility_date":"2026-10-01","assets":{"directory":"./dist","binding":"ASSETS","not_found_handling":"single-page-application"},"observability":{"logs":{"enabled":true,"invocation_logs":true}},"vars":{"VAPID_PUBLIC_KEY":"BGUxz-fJazVh04JTTlVyI73z0XPBZTaCwZFZVQCW35c2sMaUgmY8mqnsGJ8x5E6suUMbYSzIJdfL3e5UNqo6TjA"},"d1_databases":[{"binding":"DB","database_name":"listell","database_id":"1ed2baaa-1d6f-4c3a-92e0-db40bcb6fd78","migrations_dir":"migrations"}]}
+{
+  "name": "listell",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
+  "vars": {
+    "VAPID_PUBLIC_KEY": "BGUxz-fJazVh04JTTlVyI73z0XPBZTaCwZFZVQCW35c2sMaUgmY8mqnsGJ8x5E6suUMbYSzIJdfL3e5UNqo6TjA"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "listell",
+      "database_id": "1ed2baaa-1d6f-4c3a-92e0-db40bcb6fd78",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
