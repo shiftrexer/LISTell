@@ -8,7 +8,7 @@ const icons=[
 `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 33c0-5 5-8 10-8l12 1 13-14c3-3 7-3 8-1 1 1 0 3-1 5l-8 13 13 3 5-6c2-2 5-2 6 0l-3 8 3 8c-1 2-4 2-6 0l-5-6-13 3 8 13c1 2 2 4 1 5-1 2-5 2-8-1L29 40l-12 1c-5 0-10-3-10-8Z"/></svg>`,
 `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 11h36c3 0 5 2 5 5v27H9V16c0-3 2-5 5-5Z"/><path d="M9 43 4 50c-2 3 0 6 4 6h48c4 0 6-3 4-6l-5-7H9Z"/><path d="M27 56l2-6h6l2 6"/></svg>`,
 `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 24h7v16H8c-2 0-4-2-4-4v-8c0-2 2-4 4-4Z"/><rect x="15" y="18" width="10" height="28" rx="4"/><path d="M25 28h14M25 36h14"/><rect x="39" y="18" width="10" height="28" rx="4"/><path d="M49 24h7c2 0 4 2 4 4v8c0 2-2 4-4 4h-7"/></svg>`,
-`<svg viewBox="0 0 64 64"><path d="M18 19h28c7 0 10 5 11 12l2 13c1 6-5 9-9 5l-9-9H23l-9 9c-4 4-10 1-9-5l2-13c1-7 4-12 11-12Z"/><path d="M17 29h10M22 24v10"/><circle cx="43" cy="27" r="2"/><circle cx="49" cy="33" r="2"/></svg>`
+`<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16c2-5 5-7 10-7h10c5 0 8 2 10 7 7 3 11 9 13 18l3 15c1 7-4 11-10 7L42 45c-3-3-6-4-10-4s-7 1-10 4L11 56c-6 4-11 0-10-7l3-15c2-9 6-15 13-18Z"/><path d="M17 28h12M23 22v12"/><circle cx="43" cy="23" r="3"/><circle cx="51" cy="29" r="3"/><circle cx="35" cy="29" r="3"/><circle cx="43" cy="35" r="3"/></svg>`
 ];
 const key=id=>`listell_list_icon_${id}`;
 function iconSvg(n){return icons[Math.max(0,Math.min(8,Number(n||1)-1))]}
