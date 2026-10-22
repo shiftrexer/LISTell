@@ -1,0 +1,2 @@
+ALTER TABLE users ADD COLUMN profile_icon INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE users ADD COLUMN recovery_code_display TEXT;
