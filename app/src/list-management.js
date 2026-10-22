@@ -12,8 +12,9 @@ const icons=[
 ];
 const key=id=>`listell_list_icon_${id}`;
 function iconSvg(n){return icons[Math.max(0,Math.min(8,Number(n||1)-1))]}
-function decorateListIcons(){document.querySelectorAll('[data-list]').forEach(row=>{let mini=row.querySelector('.mini');if(!mini)return;mini.classList.add('custom-list-icon');mini.innerHTML=iconSvg(localStorage.getItem(key(row.dataset.list))||1)})}
-new MutationObserver(decorateListIcons).observe(document.documentElement,{childList:true,subtree:true});
+function decorateListIcons(){document.querySelectorAll('[data-list]').forEach(row=>{let mini=row.querySelector('.mini');if(!mini)return;const n=String(localStorage.getItem(key(row.dataset.list))||1);if(mini.dataset.listIcon===n)return;mini.dataset.listIcon=n;mini.classList.add('custom-list-icon');mini.innerHTML=iconSvg(n)})}
+let decorateQueued=false;
+new MutationObserver(()=>{if(decorateQueued)return;decorateQueued=true;queueMicrotask(()=>{decorateQueued=false;decorateListIcons()})}).observe(document.querySelector('#app')||document.body,{childList:true,subtree:true});
 queueMicrotask(decorateListIcons);
 function closePicker(){document.querySelector('#listIconShade')?.remove()}
 async function openIconPicker(api){
