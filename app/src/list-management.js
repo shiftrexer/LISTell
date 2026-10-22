@@ -1,7 +1,7 @@
 function haptic(){try{navigator.vibrate?.(10)}catch{}}
 const icons=[
 `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="7" width="44" height="50" rx="7"/><circle cx="21" cy="22" r="2.8" fill="currentColor" stroke="none"/><path d="M29 22h15"/><circle cx="21" cy="32" r="2.8" fill="currentColor" stroke="none"/><path d="M29 32h15"/><circle cx="21" cy="42" r="2.8" fill="currentColor" stroke="none"/><path d="M29 42h15"/></svg>`,
-`<svg viewBox="0 0 64 64"><path d="M10 15h7l5 27h27l5-21H20M25 48a4 4 0 1 0 0 .1M47 48a4 4 0 1 0 0 .1M24 28h27M29 20v20M40 20v20"/></svg>`,
+`<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 17h42L44 42H15L8 17Z"/><path d="M50 17l4-12h8"/><path d="M15 29h32M23 17l2 25M37 17l-3 25"/><path d="M15 42h29c3 0 5 2 5 5s-2 5-5 5H20"/><circle cx="20" cy="55" r="5"/><circle cx="43" cy="55" r="5"/></svg>`,
 `<svg viewBox="0 0 64 64"><path d="M8 31 32 10l24 21M14 27v28h36V27M26 55V39h12v16M42 19V11h7v14"/></svg>`,
 `<svg viewBox="0 0 64 64"><path d="M19 8h26l3 10H16l3-10ZM17 18h30l-3 35H20l-3-35ZM20 31h24"/><circle cx="32" cy="39" r="7"/><path d="M28 43c5-2 3-7 8-8"/></svg>`,
 `<svg viewBox="0 0 64 64"><path d="M10 39v-9c0-5 4-8 9-9l7-8h16l7 9c4 1 6 4 6 8v9H10ZM20 39a5 5 0 1 0 0 .1M46 39a5 5 0 1 0 0 .1M26 21h18"/></svg>`,
