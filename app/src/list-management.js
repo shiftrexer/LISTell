@@ -1,42 +1,46 @@
 function haptic(){try{navigator.vibrate?.(10)}catch{}}
+const icons=[
+`<svg viewBox="0 0 64 64"><rect x="12" y="8" width="40" height="48" rx="5"/><circle cx="21" cy="22" r="2.5"/><path d="M28 22h15M28 32h15M28 42h15"/><circle cx="21" cy="32" r="2.5"/><circle cx="21" cy="42" r="2.5"/></svg>`,
+`<svg viewBox="0 0 64 64"><path d="M10 15h7l5 27h27l5-21H20M25 48a4 4 0 1 0 0 .1M47 48a4 4 0 1 0 0 .1M24 28h27M29 20v20M40 20v20"/></svg>`,
+`<svg viewBox="0 0 64 64"><path d="M8 31 32 10l24 21M14 27v28h36V27M26 55V39h12v16M42 19V11h7v14"/></svg>`,
+`<svg viewBox="0 0 64 64"><path d="M19 8h26l3 10H16l3-10ZM17 18h30l-3 35H20l-3-35ZM20 31h24"/><circle cx="32" cy="39" r="7"/><path d="M28 43c5-2 3-7 8-8"/></svg>`,
+`<svg viewBox="0 0 64 64"><path d="M10 39v-9c0-5 4-8 9-9l7-8h16l7 9c4 1 6 4 6 8v9H10ZM20 39a5 5 0 1 0 0 .1M46 39a5 5 0 1 0 0 .1M26 21h18"/></svg>`,
+`<svg viewBox="0 0 64 64"><path d="M7 34c0-4 4-7 8-7h10L38 10h8l-7 17h11l7-7h5l-4 11 4 11h-5l-7-7H39l7 18h-8L25 35H15c-4 0-8-1-8-1Z"/></svg>`,
+`<svg viewBox="0 0 64 64"><rect x="12" y="10" width="40" height="32" rx="3"/><path d="M9 43h46l5 8H4l5-8ZM28 47h8"/></svg>`,
+`<svg viewBox="0 0 64 64"><path d="M6 25h8v14H6V25Zm8-5h8v24h-8V20Zm8 10h20M42 20h8v24h-8V20Zm8 5h8v14h-8V25"/></svg>`,
+`<svg viewBox="0 0 64 64"><path d="M18 19h28c7 0 10 5 11 12l2 13c1 6-5 9-9 5l-9-9H23l-9 9c-4 4-10 1-9-5l2-13c1-7 4-12 11-12Z"/><path d="M17 29h10M22 24v10"/><circle cx="43" cy="27" r="2"/><circle cx="49" cy="33" r="2"/></svg>`
+];
+const key=id=>`listell_list_icon_${id}`;
+function iconSvg(n){return icons[Math.max(0,Math.min(8,Number(n||1)-1))]}
+function decorateListIcons(){document.querySelectorAll('[data-list]').forEach(row=>{let mini=row.querySelector('.mini');if(!mini)return;mini.classList.add('custom-list-icon');mini.innerHTML=iconSvg(localStorage.getItem(key(row.dataset.list))||1)})}
+new MutationObserver(decorateListIcons).observe(document.documentElement,{childList:true,subtree:true});
+queueMicrotask(decorateListIcons);
+function closePicker(){document.querySelector('#listIconShade')?.remove()}
+async function openIconPicker(api){
+  try{
+    const {lists=[]}=await api('lists');
+    document.body.insertAdjacentHTML('beforeend',`<div class="shade" id="listIconShade"><section class="sheet list-icon-sheet"><div class="handle"></div><button class="dialog-cancel" id="listIconCancel">キャンセル</button><em>LIST ICON</em><h1>変更するリストを選択</h1><div class="icon-list-choice">${lists.map(x=>`<button data-icon-list="${x.id}"><span class="custom-list-icon">${iconSvg(localStorage.getItem(key(x.id))||1)}</span><strong>${x.name}</strong><b>›</b></button>`).join('')}</div></section></div>`);
+    const shade=document.querySelector('#listIconShade');
+    shade.querySelector('#listIconCancel').onclick=closePicker;
+    shade.onclick=e=>{if(e.target===shade)closePicker()};
+    shade.querySelectorAll('[data-icon-list]').forEach(b=>b.onclick=()=>showGrid(b.dataset.iconList,b.querySelector('strong').textContent));
+  }catch(e){alert(e.message)}
+}
+function showGrid(id,name){
+  const sheet=document.querySelector('#listIconShade .list-icon-sheet');if(!sheet)return;
+  const current=Number(localStorage.getItem(key(id))||1);
+  sheet.innerHTML=`<div class="handle"></div><button class="dialog-cancel" id="listIconCancel">キャンセル</button><em>LIST ICON</em><h1>${name}</h1><p class="icon-picker-label">アイコンを選択</p><div class="list-icon-grid">${icons.map((svg,i)=>`<button data-icon-number="${i+1}" class="${current===i+1?'selected':''}"><span>${svg}</span></button>`).join('')}</div>`;
+  sheet.querySelector('#listIconCancel').onclick=closePicker;
+  sheet.querySelectorAll('[data-icon-number]').forEach(b=>b.onclick=()=>{localStorage.setItem(key(id),b.dataset.iconNumber);haptic();closePicker();decorateListIcons()});
+}
 export function bindListManagement({api}){
   const card=document.querySelector('#listManagementCard');
   if(!card||card.dataset.managementReady)return;
   card.dataset.managementReady='true';
-
-  const create=card.querySelector('#newList');
-  const rename=card.querySelector('#renameList');
-  const reorder=card.querySelector('#reorderLists');
-  const remove=card.querySelector('#deleteList');
-  const history=card.querySelector('[data-panel="history"]');
-
-  const icon=document.createElement('div');
-  icon.id='changeListIcon';
-  icon.innerHTML='<strong>リストアイコンを変更</strong><b>›</b>';
-
+  const create=card.querySelector('#newList'),rename=card.querySelector('#renameList'),reorder=card.querySelector('#reorderLists'),remove=card.querySelector('#deleteList'),history=card.querySelector('[data-panel="history"]');
+  const icon=document.createElement('div');icon.id='changeListIcon';icon.innerHTML='<strong>リストアイコンを変更</strong><b>›</b>';
   [create,reorder,rename,icon,remove,history].forEach(el=>{if(el)card.appendChild(el)});
-
-  if(create)create.onclick=async()=>{
-    let name=await window.listellPrompt({title:'新規リストを作成',label:'リスト名',placeholder:'リスト名を入力',eyebrow:'NEW LIST'});
-    if(!name)return;
-    try{await api('lists',{name});haptic();location.reload()}catch(e){alert(e.message)}
-  };
-
-  if(reorder)reorder.onclick=async()=>{
-    const existing=document.querySelector('#reorderPanel');
-    if(existing)return existing.remove();
-    try{
-      const result=await api('lists'),ids=[...result.lists];
-      const panel=document.createElement('section');panel.id='reorderPanel';panel.className='card reorder-panel';
-      const draw=()=>{
-        panel.innerHTML=ids.map((x,i)=>`<div class="reorder-row"><strong>${x.name}</strong><span><button data-up="${i}" ${i===0?'disabled':''}>↑</button><button data-down="${i}" ${i===ids.length-1?'disabled':''}>↓</button></span></div>`).join('')+'<button class="primary" id="saveListOrder">並び順を保存</button>';
-        panel.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{let i=Number(b.dataset.up);[ids[i-1],ids[i]]=[ids[i],ids[i-1]];haptic();draw()});
-        panel.querySelectorAll('[data-down]').forEach(b=>b.onclick=()=>{let i=Number(b.dataset.down);[ids[i+1],ids[i]]=[ids[i],ids[i+1]];haptic();draw()});
-        panel.querySelector('#saveListOrder').onclick=async()=>{try{await api('lists/reorder',{ids:ids.map(x=>x.id)});haptic();location.reload()}catch(e){alert(e.message)}};
-      };
-      card.after(panel);draw();
-    }catch(e){alert(e.message)}
-  };
-
-  icon.onclick=()=>window.dispatchEvent(new CustomEvent('listell:change-list-icon'));
+  if(create)create.onclick=async()=>{let name=await window.listellPrompt({title:'新規リストを作成',label:'リスト名',placeholder:'リスト名を入力',eyebrow:'NEW LIST'});if(!name)return;try{await api('lists',{name});haptic();location.reload()}catch(e){alert(e.message)}};
+  if(reorder)reorder.onclick=async()=>{const existing=document.querySelector('#reorderPanel');if(existing)return existing.remove();try{const result=await api('lists'),ids=[...result.lists];const panel=document.createElement('section');panel.id='reorderPanel';panel.className='card reorder-panel';const draw=()=>{panel.innerHTML=ids.map((x,i)=>`<div class="reorder-row"><strong>${x.name}</strong><span><button data-up="${i}" ${i===0?'disabled':''}>↑</button><button data-down="${i}" ${i===ids.length-1?'disabled':''}>↓</button></span></div>`).join('')+'<button class="primary" id="saveListOrder">並び順を保存</button>';panel.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{let i=Number(b.dataset.up);[ids[i-1],ids[i]]=[ids[i],ids[i-1]];haptic();draw()});panel.querySelectorAll('[data-down]').forEach(b=>b.onclick=()=>{let i=Number(b.dataset.down);[ids[i+1],ids[i]]=[ids[i],ids[i+1]];haptic();draw()});panel.querySelector('#saveListOrder').onclick=async()=>{try{await api('lists/reorder',{ids:ids.map(x=>x.id)});haptic();location.reload()}catch(e){alert(e.message)}}};card.after(panel);draw()}catch(e){alert(e.message)}};
+  icon.onclick=()=>openIconPicker(api);
 }
