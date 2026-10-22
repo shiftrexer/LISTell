@@ -13,35 +13,20 @@ const icons=[
 const key=id=>`listell_list_icon_${id}`;
 function iconSvg(n){return icons[Math.max(0,Math.min(8,Number(n||1)-1))]}
 function decorateListIcons(){document.querySelectorAll('[data-list]').forEach(row=>{let mini=row.querySelector('.mini');if(!mini)return;const n=String(localStorage.getItem(key(row.dataset.list))||1);if(mini.dataset.listIcon===n)return;mini.dataset.listIcon=n;mini.classList.add('custom-list-icon');mini.innerHTML=iconSvg(n)})}
-let decorateQueued=false;
-new MutationObserver(()=>{if(decorateQueued)return;decorateQueued=true;queueMicrotask(()=>{decorateQueued=false;decorateListIcons()})}).observe(document.querySelector('#app')||document.body,{childList:true,subtree:true});
-queueMicrotask(decorateListIcons);
 function closePicker(){document.querySelector('#listIconShade')?.remove()}
 async function openIconPicker(api){
   try{
     const {lists=[]}=await api('lists');
     document.body.insertAdjacentHTML('beforeend',`<div class="shade" id="listIconShade"><section class="sheet list-icon-sheet"><div class="handle"></div><button class="dialog-cancel" id="listIconCancel">キャンセル</button><em>LIST ICON</em><h1>変更するリストを選択</h1><div class="icon-list-choice">${lists.map(x=>`<button data-icon-list="${x.id}"><span class="custom-list-icon">${iconSvg(localStorage.getItem(key(x.id))||1)}</span><strong>${x.name}</strong><b>›</b></button>`).join('')}</div></section></div>`);
-    const shade=document.querySelector('#listIconShade');
-    shade.querySelector('#listIconCancel').onclick=closePicker;
-    shade.onclick=e=>{if(e.target===shade)closePicker()};
-    shade.querySelectorAll('[data-icon-list]').forEach(b=>b.onclick=()=>showGrid(b.dataset.iconList,b.querySelector('strong').textContent));
+    const shade=document.querySelector('#listIconShade');shade.querySelector('#listIconCancel').onclick=closePicker;shade.onclick=e=>{if(e.target===shade)closePicker()};shade.querySelectorAll('[data-icon-list]').forEach(b=>b.onclick=()=>showGrid(b.dataset.iconList,b.querySelector('strong').textContent));
   }catch(e){alert(e.message)}
 }
-function showGrid(id,name){
-  const sheet=document.querySelector('#listIconShade .list-icon-sheet');if(!sheet)return;
-  const current=Number(localStorage.getItem(key(id))||1);
-  sheet.innerHTML=`<div class="handle"></div><button class="dialog-cancel" id="listIconCancel">キャンセル</button><em>LIST ICON</em><h1>${name}</h1><p class="icon-picker-label">アイコンを選択</p><div class="list-icon-grid">${icons.map((svg,i)=>`<button data-icon-number="${i+1}" class="${current===i+1?'selected':''}"><span>${svg}</span></button>`).join('')}</div>`;
-  sheet.querySelector('#listIconCancel').onclick=closePicker;
-  sheet.querySelectorAll('[data-icon-number]').forEach(b=>b.onclick=()=>{localStorage.setItem(key(id),b.dataset.iconNumber);haptic();closePicker();decorateListIcons()});
-}
+function showGrid(id,name){const sheet=document.querySelector('#listIconShade .list-icon-sheet');if(!sheet)return;const current=Number(localStorage.getItem(key(id))||1);sheet.innerHTML=`<div class="handle"></div><button class="dialog-cancel" id="listIconCancel">キャンセル</button><em>LIST ICON</em><h1>${name}</h1><p class="icon-picker-label">アイコンを選択</p><div class="list-icon-grid">${icons.map((svg,i)=>`<button data-icon-number="${i+1}" class="${current===i+1?'selected':''}"><span>${svg}</span></button>`).join('')}</div>`;sheet.querySelector('#listIconCancel').onclick=closePicker;sheet.querySelectorAll('[data-icon-number]').forEach(b=>b.onclick=()=>{localStorage.setItem(key(id),b.dataset.iconNumber);haptic();closePicker()})}
 export function bindListManagement({api}){
-  const card=document.querySelector('#listManagementCard');
-  if(!card||card.dataset.managementReady)return;
-  card.dataset.managementReady='true';
+  decorateListIcons();
+  const card=document.querySelector('#listManagementCard');if(!card||card.dataset.managementReady)return;card.dataset.managementReady='true';
   const create=card.querySelector('#newList'),rename=card.querySelector('#renameList'),reorder=card.querySelector('#reorderLists'),remove=card.querySelector('#deleteList'),history=card.querySelector('[data-panel="history"]');
-  const icon=document.createElement('div');icon.id='changeListIcon';icon.innerHTML='<strong>リストアイコンを変更</strong><b>›</b>';
-  [create,reorder,rename,icon,remove,history].forEach(el=>{if(el)card.appendChild(el)});
-  if(create)create.onclick=async()=>{let name=await window.listellPrompt({title:'新規リストを作成',label:'リスト名',placeholder:'リスト名を入力',eyebrow:'NEW LIST'});if(!name)return;try{await api('lists',{name});haptic();location.reload()}catch(e){alert(e.message)}};
+  const icon=document.createElement('div');icon.id='changeListIcon';icon.innerHTML='<strong>リストアイコンを変更</strong><b>›</b>';[create,reorder,rename,icon,remove,history].forEach(el=>{if(el)card.appendChild(el)});
   if(reorder)reorder.onclick=async()=>{const existing=document.querySelector('#reorderPanel');if(existing)return existing.remove();try{const result=await api('lists'),ids=[...result.lists];const panel=document.createElement('section');panel.id='reorderPanel';panel.className='card reorder-panel';const draw=()=>{panel.innerHTML=ids.map((x,i)=>`<div class="reorder-row"><strong>${x.name}</strong><span><button data-up="${i}" ${i===0?'disabled':''}>↑</button><button data-down="${i}" ${i===ids.length-1?'disabled':''}>↓</button></span></div>`).join('')+'<button class="primary" id="saveListOrder">並び順を保存</button>';panel.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{let i=Number(b.dataset.up);[ids[i-1],ids[i]]=[ids[i],ids[i-1]];haptic();draw()});panel.querySelectorAll('[data-down]').forEach(b=>b.onclick=()=>{let i=Number(b.dataset.down);[ids[i+1],ids[i]]=[ids[i],ids[i+1]];haptic();draw()});panel.querySelector('#saveListOrder').onclick=async()=>{try{await api('lists/reorder',{ids:ids.map(x=>x.id)});haptic();location.reload()}catch(e){alert(e.message)}}};card.after(panel);draw()}catch(e){alert(e.message)}};
   icon.onclick=()=>openIconPicker(api);
 }
