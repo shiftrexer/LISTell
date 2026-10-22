@@ -8,22 +8,34 @@ function enhance(){
   const choices=[...sheet.querySelectorAll('[data-choice]')];
   if(!choices.length)return;
   sheet.dataset.addSubmitReady='1';
-  let selected=choices.find(b=>b.dataset.choice==='normal')||choices[0];
+  let selected=choices.find(b=>b.classList.contains('sel'))||choices.find(b=>b.dataset.choice==='normal')||choices[0];
   choices.forEach(b=>b.classList.toggle('sel',b===selected));
-  const submit=document.createElement('button');
-  submit.type='button';
-  submit.className='primary add-item-submit';
-  submit.textContent='リストに追加';
-  submit.style.background='var(--accent)';
-  submit.style.color='var(--accent-ink)';
-  sheet.appendChild(submit);
-  submit.addEventListener('click',()=>{
-    const input=sheet.querySelector('#name');
-    if(!input?.value.trim()){input?.focus();return}
-    bypass=true;
-    selected.click();
-    queueMicrotask(()=>{bypass=false});
-  });
+
+  let submit=sheet.querySelector('.add-item-submit,#next,button.primary');
+  if(!submit){
+    submit=document.createElement('button');
+    submit.type='button';
+    submit.className='primary add-item-submit';
+    submit.textContent='リストに追加';
+    sheet.appendChild(submit);
+  }else{
+    submit.classList.add('add-item-submit');
+  }
+  submit.style.setProperty('background','var(--accent)','important');
+  submit.style.setProperty('color','var(--accent-ink)','important');
+
+  if(!submit.dataset.accentSubmitBound){
+    submit.dataset.accentSubmitBound='1';
+    submit.addEventListener('click',()=>{
+      if(submit.id==='next')return;
+      const input=sheet.querySelector('#name');
+      if(!input?.value.trim()){input?.focus();return}
+      bypass=true;
+      selected.click();
+      queueMicrotask(()=>{bypass=false});
+    });
+  }
+
   choices.forEach(b=>b.addEventListener('click',e=>{
     if(bypass)return;
     e.preventDefault();
