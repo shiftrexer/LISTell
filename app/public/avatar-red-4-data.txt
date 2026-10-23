@@ -1,1 +1,1 @@
-red avatar 4 is served from /avatar-red-4.webp; supplied pug shopping-cart image
+red avatar 4: /avatar-red-4.webp
